@@ -1,0 +1,128 @@
+﻿@page "/"
+@using NewDyCalcWasm.Data
+
+<PageTitle>Dy Calc</PageTitle>
+
+
+
+
+<div class="container">
+    @if (state == 0)
+    {
+        <div class="row justify-content-center mt-5">
+            <div class="col-6 col-md-5 col-lg-3 border rounded shadow p-4">
+                <h3 class="text-center">Day 1</h3>
+
+                <h6 class="text-center fw-bold mb-0">South / Red </h6>
+                <input @bind-value="Red.FirstDayMeals" type="number" class="border rounded p-2 form-control mb-2" />
+
+                <h6 class="text-center fw-bold mb-0">North / Blue </h6>
+                <input @bind-value="Blue.FirstDayMeals" type="number" class="border rounded p-2 form-control mb-2" />
+
+
+                <h6 class="text-center fw-bold mb-0">Brunch / Orange </h6>
+                <input @bind-value="Orange.FirstDayMeals" type="number" class="border rounded p-2 form-control mb-2" />
+
+                <h6 class="text-center fw-bold mb-0">Child / Yellow</h6>
+                <input @bind-value="Yellow.FirstDayMeals" type="number" class="border rounded p-2 form-control mb-2" />
+
+                <h6 class="text-center fw-bold mb-0">GFML / Gray</h6>
+                <input @bind-value="Gray.FirstDayMeals" type="number" class="border rounded p-2 form-control mb-2" />
+
+                <h6 class="text-center fw-bold mb-0">VGML / Green</h6>
+                <input @bind-value="Green.FirstDayMeals" type="number" class="border  rounded p-2 form-control mb-2" />
+
+            </div>
+
+            <div class="col-6 col-md-5 col-lg-3 border rounded shadow p-4">
+                <h3 class="text-center">Day 2</h3>
+
+                <h6 class="text-center fw-bold mb-0">South / Red </h6>
+                <input @bind-value="Red.SecondDayMeals" type="number" class="border mb-2 rounded p-2 form-control" />
+
+                <h6 class="text-center fw-bold mb-0">North / Blue </h6>
+                <input @bind-value="Blue.SecondDayMeals" type="number" class="border mb-2 rounded p-2 form-control" />
+
+
+                <h6 class="text-center fw-bold mb-0">Brunch / Orange </h6>
+                <input @bind-value="Orange.SecondDayMeals" type="number" class="border mb-2 rounded p-2 form-control" />
+
+                <h6 class="text-center fw-bold mb-0">Child / Yellow</h6>
+                <input @bind-value="Yellow.SecondDayMeals" type="number" class="border mb-2 rounded p-2 form-control" />
+
+                <h6 class="text-center fw-bold mb-0">GFML / Gray</h6>
+                <input @bind-value="Gray.SecondDayMeals" type="number" class="border mb-2 rounded p-2 form-control" />
+
+                <h6 class="text-center fw-bold mb-0">VGML / Green</h6>
+                <input @bind-value="Green.SecondDayMeals" type="number" class="border mb-2 rounded p-2 form-control" />
+
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-6 col-lg-4 mt-2">
+                <button class="btn btn-primary" @onclick="Calculate" style="width:100%;">Calculate</button>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-6 col-lg-4 mt-2">
+
+                <ul class="list-group">
+                    <h6 class="text-center text-muted">values in carton boxes</h6>
+                    <h4 class="text-center">MealBox => </h4>
+                    <li class="list-group-item">Red / Out <span style="float:right">@Red.CartonMealBox</span></li>
+                    <li class="list-group-item">Blue / Home <span style="float:right">@Blue.CartonMealBox</span></li>
+                    <li class="list-group-item">Brunch / Orange <span style="float:right">@Orange.CartonMealBox</span></li>
+                    <li class="list-group-item">Yellow / CHML <span style="float:right">@Yellow.CartonMealBox</span></li>
+                    <li class="list-group-item">Gray / GFML <span style="float:right">@Gray.CartonMealBox</span></li>
+                    <li class="list-group-item">Green / VGML <span style="float:right">@Green.CartonMealBox</span></li>
+                </ul>
+
+                <ul class="list-group mt-3">
+                    <h6 class="text-center text-muted">values in carton boxes</h6>
+                    <h4 class="text-center">HotMeals => </h4>
+                    <li class="list-group-item">Mediteranian Chick <span style="float:right">@Red.CartonMealBox</span></li>
+                    <li class="list-group-item">Chicken Piccata <span style="float:right">@Blue.CartonMealBox</span></li>
+                    <li class="list-group-item">Quenchy Something <span style="float:right">@Orange.CartonMealBox</span></li>
+                    <li class="list-group-item">Meatballs <span style="float:right">@Yellow.CartonMealBox</span></li>
+                    <li class="list-group-item">GFML <span style="float:right">@Gray.CartonMealBox</span></li>
+                    <li class="list-group-item">VGML <span style="float:right">@Green.CartonMealBox</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-6 col-lg-4 mt-2">
+                <button class="btn btn-primary" @onclick="@(()=> state = 0)" style="width:100%;">Back</button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+
+
+    int state = 0;
+
+    Meal Red = new Meal(1);
+    Meal Blue = new Meal(2);
+    Meal Orange = new Meal(3);
+    Meal Yellow = new Meal(4);
+    Meal Gray = new Meal(5);
+    Meal Green = new Meal(6);
+
+    void Calculate()
+    {
+        Red.Calculate();
+        Blue.Calculate();
+        Orange.Calculate();
+        Yellow.Calculate();
+        Gray.Calculate();
+        Green.Calculate();
+        state = 1;
+    }
+
+}
