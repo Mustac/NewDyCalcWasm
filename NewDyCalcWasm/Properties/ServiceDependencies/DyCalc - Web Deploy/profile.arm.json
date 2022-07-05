@@ -21,7 +21,7 @@
     },
     "resourceName": {
       "type": "string",
-      "defaultValue": "NewDyCalcWasm20220705094536",
+      "defaultValue": "DyCalc",
       "metadata": {
         "description": "Name of the main resource to be created by this template."
       }

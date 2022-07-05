@@ -1,3 +1,4 @@
+using Append.Blazor.Printing;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -22,5 +23,7 @@ builder.Services.AddBlazoredLocalStorage(config =>
     config.JsonSerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
     config.JsonSerializerOptions.WriteIndented = false;
 });
+
+builder.Services.AddScoped<IPrintingService, PrintingService>();
 
 await builder.Build().RunAsync();

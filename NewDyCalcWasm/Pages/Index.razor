@@ -1,5 +1,7 @@
 ﻿@page "/"
 @using NewDyCalcWasm.Data
+@using Append.Blazor.Printing
+@inject IPrintingService PrintingService
 
 <PageTitle>Dy Calc</PageTitle>
 
@@ -11,8 +13,8 @@
     {
         <div class="row justify-content-center mt-5">
             <div class="col-6 col-md-5 col-lg-3 border rounded shadow p-4">
-                <h3 class="text-center">Day 1</h3>
-
+                <h3 class="text-center mb-0">Day 1</h3>
+                <h6 class="text-center text-muted mb-2"><b>Next</b> day at 18:30h</h6>
                 <h6 class="text-center fw-bold mb-0">South / Red </h6>
                 <input @bind-value="Red.FirstDayMeals" type="number" class="border rounded p-2 form-control mb-2" />
 
@@ -35,7 +37,9 @@
             </div>
 
             <div class="col-6 col-md-5 col-lg-3 border rounded shadow p-4">
-                <h3 class="text-center">Day 2</h3>
+                <h3 class="text-center mb-0">Day 2</h3>
+                                <h6 class="text-center text-muted mb-2"><b>In 2 days</b> from today at 10:30h</h6>
+
 
                 <h6 class="text-center fw-bold mb-0">South / Red </h6>
                 <input @bind-value="Red.SecondDayMeals" type="number" class="border mb-2 rounded p-2 form-control" />
@@ -72,7 +76,7 @@
 
                 <ul class="list-group">
                     <h6 class="text-center text-muted">values in carton boxes</h6>
-                    <h4 class="text-center">MealBox => </h4>
+                    <h4 class="text-center">MealBox</h4>
                     <li class="list-group-item">Red / Out <span style="float:right">@Red.CartonMealBox</span></li>
                     <li class="list-group-item">Blue / Home <span style="float:right">@Blue.CartonMealBox</span></li>
                     <li class="list-group-item">Brunch / Orange <span style="float:right">@Orange.CartonMealBox</span></li>
@@ -83,7 +87,7 @@
 
                 <ul class="list-group mt-3">
                     <h6 class="text-center text-muted">values in carton boxes</h6>
-                    <h4 class="text-center">HotMeals => </h4>
+                    <h4 class="text-center">HotMeals</h4>
                     <li class="list-group-item">Mediteranian Chick <span style="float:right">@Red.CartonMealBox</span></li>
                     <li class="list-group-item">Chicken Piccata <span style="float:right">@Blue.CartonMealBox</span></li>
                     <li class="list-group-item">Quenchy Something <span style="float:right">@Orange.CartonMealBox</span></li>
@@ -96,7 +100,7 @@
 
         <div class="row justify-content-center">
             <div class="col-12 col-sm-6 col-lg-4 mt-2">
-                <button class="btn btn-primary" @onclick="@(()=> state = 0)" style="width:100%;">Back</button>
+                <button class="btn btn-outline-dark " style="position:absolute; left:30px;top:30px; border-radius:70%; width:70px; height:70px;" @onclick="@(()=> state = 0)" >Back</button>
             </div>
         </div>
     }
