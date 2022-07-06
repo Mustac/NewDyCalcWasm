@@ -41,11 +41,15 @@ namespace NewDyCalcWasm.Data
             int secondMeals = SecondDayMeals == null ? 0 : SecondDayMeals.Value;
 
             int summedBoxes = firstMeals + secondMeals;
-            
-           
-                PlasticHotMeal = ((float)summedBoxes / HotMealPlasticBox).ToString("#.##");
+           if(summedBoxes == 0)
+            {
+                CartonHotMeal = "0";
+                CartonMealBox = "0";
+                return;
+            }
+               // PlasticHotMeal = ((float)summedBoxes / HotMealPlasticBox).ToString("#.##");
 
-                PlasticMealBox = ((float)summedBoxes / MealBoxPlasticBox).ToString("#.##");
+              //  PlasticMealBox = ((float)summedBoxes / MealBoxPlasticBox).ToString("#.##");
 
                 CartonHotMeal = ((float)summedBoxes / HotMealCartonBox).ToString("#.##");
 

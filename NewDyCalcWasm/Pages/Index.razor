@@ -12,9 +12,24 @@
     @if (state == 0)
     {
         <div class="row justify-content-center mt-5">
-            <div class="col-6 col-md-5 col-lg-3 border rounded shadow p-4">
-                <h3 class="text-center mb-0">Day 1</h3>
-                <h6 class="text-center text-muted mb-2"><b>Next</b> day at 18:30h</h6>
+            <div class="col-6 d-lg-block py-2">
+                <div class="border rounded shadow-sm p-3">
+                <h6 class="text-muted mb-1 pt-2">
+                    <p><b class="mb-1">Instructions :</b></p> 
+                    <p class="my-1">Day 1</p>
+                    <p  class="mt-1 mb-0">1. Open Production plans on date <b>@(DateTime.UtcNow.Date.AddDays(1).ToString("dd/MM"))</b></p>
+                    <p>2. Take info from <b class="text-primary">18:30h</b> plane button and write it down in input fields</p>
+                    <p class="my-1">Day 2</p>
+                    <p  class="mt-1 mb-0">1. Open Production plans on date <b>@(DateTime.UtcNow.Date.AddDays(2).ToString("dd/MM"))</b></p>
+                    <p>2. Take info from <b class="text-primary">10:30h</b> plane button and write it down in input fields</p>
+                </h6>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-2">
+            <div class="col-6 col-md-5 col-lg-3">
+                <div class="border rounded shadow-sm p-3">
+                <h3 class="text-center pb-1">Day 1</h3>
                 <h6 class="text-center fw-bold mb-0">South / Red </h6>
                 <input @bind-value="Red.FirstDayMeals" type="number" class="border rounded p-2 form-control mb-2" />
 
@@ -33,12 +48,13 @@
 
                 <h6 class="text-center fw-bold mb-0">VGML / Green</h6>
                 <input @bind-value="Green.FirstDayMeals" type="number" class="border  rounded p-2 form-control mb-2" />
-
+                </div>
             </div>
 
-            <div class="col-6 col-md-5 col-lg-3 border rounded shadow p-4">
-                <h3 class="text-center mb-0">Day 2</h3>
-                                <h6 class="text-center text-muted mb-2"><b>In 2 days</b> from today at 10:30h</h6>
+            <div class="col-6 col-md-5 col-lg-3 ">
+                <div class="border rounded shadow-sm p-3">
+
+                <h3 class="text-center pb-1">Day 2</h3>
 
 
                 <h6 class="text-center fw-bold mb-0">South / Red </h6>
@@ -59,11 +75,11 @@
 
                 <h6 class="text-center fw-bold mb-0">VGML / Green</h6>
                 <input @bind-value="Green.SecondDayMeals" type="number" class="border mb-2 rounded p-2 form-control" />
-
+                </div>
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-12 col-sm-6 col-lg-4 mt-2">
+            <div class="col-12 col-sm-6 col-lg-4 mt-4">
                 <button class="btn btn-primary" @onclick="Calculate" style="width:100%;">Calculate</button>
             </div>
         </div>
@@ -72,36 +88,35 @@
     else
     {
         <div class="row justify-content-center">
-            <div class="col-12 col-sm-6 col-lg-4 mt-2">
-
-                <ul class="list-group">
-                    <h6 class="text-center text-muted">values in carton boxes</h6>
+            <div class="col-12 col-sm-6 col-lg-4 mt-2 text-center">
+                    <h5 class="text-center text-danger">Values are calculated in Carton Box</h5>
+                    <hr>
+                    <div class="border p-4 text-start d-inline-block">
+                <ul class="list-group mx-auto" style="width:370px;">
                     <h4 class="text-center">MealBox</h4>
-                    <li class="list-group-item">Red / Out <span style="float:right">@Red.CartonMealBox</span></li>
-                    <li class="list-group-item">Blue / Home <span style="float:right">@Blue.CartonMealBox</span></li>
+                    <li class="list-group-item">Out / Red <span style="float:right">@Red.CartonMealBox</span></li>
+                    <li class="list-group-item">Home / Blue<span style="float:right">@Blue.CartonMealBox</span></li>
                     <li class="list-group-item">Brunch / Orange <span style="float:right">@Orange.CartonMealBox</span></li>
-                    <li class="list-group-item">Yellow / CHML <span style="float:right">@Yellow.CartonMealBox</span></li>
-                    <li class="list-group-item">Gray / GFML <span style="float:right">@Gray.CartonMealBox</span></li>
-                    <li class="list-group-item">Green / VGML <span style="float:right">@Green.CartonMealBox</span></li>
+                    <li class="list-group-item">CHML / Yellow<span style="float:right">@Yellow.CartonMealBox</span></li>
+                    <li class="list-group-item">GFML / Gray<span style="float:right">@Gray.CartonMealBox</span></li>
+                    <li class="list-group-item">VGML / Green<span style="float:right">@Green.CartonMealBox</span></li>
                 </ul>
 
-                <ul class="list-group mt-3">
-                    <h6 class="text-center text-muted">values in carton boxes</h6>
-                    <h4 class="text-center">HotMeals</h4>
-                    <li class="list-group-item">Mediteranian Chick <span style="float:right">@Red.CartonMealBox</span></li>
-                    <li class="list-group-item">Chicken Piccata <span style="float:right">@Blue.CartonMealBox</span></li>
-                    <li class="list-group-item">Quenchy Something <span style="float:right">@Orange.CartonMealBox</span></li>
-                    <li class="list-group-item">Meatballs <span style="float:right">@Yellow.CartonMealBox</span></li>
-                    <li class="list-group-item">GFML <span style="float:right">@Gray.CartonMealBox</span></li>
-                    <li class="list-group-item">VGML <span style="float:right">@Green.CartonMealBox</span></li>
+                <ul class="list-group mt-3 mx-auto" style="width:370px;">
+                    <h4 class="text-center" >HotMeals</h4>
+                    <li class="list-group-item" >Mediteranian Chick <span style="float:right">@Red.CartonHotMeal</span></li>
+                    <li class="list-group-item">Chicken Piccata <span style="float:right">@Blue.CartonHotMeal</span></li>
+                    <li class="list-group-item">Quiche Bellpepper <span style="float:right">@Orange.CartonHotMeal</span></li>
+                    <li class="list-group-item">Meatballs <span style="float:right">@Yellow.CartonHotMeal</span></li>
+                    <li class="list-group-item">Chicken Risotto <span style="float:right">@Gray.CartonHotMeal</span></li>
+                    <li class="list-group-item">Masala Quinoa <span style="float:right">@Green.CartonHotMeal</span></li>
                 </ul>
+                </div>
             </div>
         </div>
 
-        <div class="row justify-content-center">
-            <div class="col-12 col-sm-6 col-lg-4 mt-2">
-                <button class="btn btn-outline-dark " style="position:absolute; left:30px;top:30px; border-radius:70%; width:70px; height:70px;" @onclick="@(()=> state = 0)" >Back</button>
-            </div>
+        <div class="row justify-content-center text-center mt-3">
+                <button class="btn btn-outline-dark" @onclick="@(()=> state = 0)" style="width:400px;">Go Back</button>
         </div>
     }
 </div>

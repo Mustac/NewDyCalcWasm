@@ -66,3 +66,11 @@ a, .btn-link {
 input{
     text-align:center;
 }
+
+.list-group-item{
+    border:black 2px solid;
+}
+
+input{
+    border-color:black !important;
+}
