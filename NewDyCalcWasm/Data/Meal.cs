@@ -6,10 +6,14 @@ namespace NewDyCalcWasm.Data
     {
 
         public int Id { get; private set; }
+        public string NameBox { get; set; }
+        public string NameHotMeal { get; set; }
 
-        public Meal(int id)
+        public Meal(int id, string nameBox, string nameHotMeal)
         {
             Id = id;
+            NameBox = nameBox;
+            NameHotMeal = nameHotMeal;
         }
 
         public Meal()
@@ -45,16 +49,20 @@ namespace NewDyCalcWasm.Data
             {
                 CartonHotMeal = "0";
                 CartonMealBox = "0";
+                PlasticHotMeal = "0";
+                PlasticMealBox = "0";
                 return;
             }
-               // PlasticHotMeal = ((float)summedBoxes / HotMealPlasticBox).ToString("#.##");
+            var tempCartonHotMealsCeil = Math.Ceiling(((float)summedBoxes / HotMealCartonBox));
+            var tempCartonMealsBoxCeil = Math.Ceiling(((float)summedBoxes / MealBoxCartonBox));
 
-              //  PlasticMealBox = ((float)summedBoxes / MealBoxPlasticBox).ToString("#.##");
+            CartonHotMeal = tempCartonHotMealsCeil.ToString("0.##");
 
-                CartonHotMeal = ((float)summedBoxes / HotMealCartonBox).ToString("#.##");
+            CartonMealBox = tempCartonMealsBoxCeil.ToString("0.##");
 
-                CartonMealBox = ((float)summedBoxes / MealBoxCartonBox).ToString("#.##");
-            
+                PlasticHotMeal = ((float)tempCartonHotMealsCeil * 24 / HotMealPlasticBox).ToString("0.##");
+
+                PlasticMealBox = ((float)tempCartonMealsBoxCeil * 12 / MealBoxPlasticBox).ToString("0.##");
         }
 
 
