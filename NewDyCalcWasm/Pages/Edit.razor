@@ -1,0 +1,56 @@
+﻿@inject NewItemService NewItemService
+
+@page "/edit"
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-6">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Box Name</th>
+                        <th>Meal Name</th>
+                        <th>Color</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Test</td>
+                        <td>Test</td>
+                        <td>Test</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+            <div class="row justify-content-center">
+                <div class="col-3">
+
+                    <button class="btn btn-success form-control" @onclick="CreateNewItem">Add new item</button>
+                </div>
+            </div>
+        
+
+    </div>
+</div>
+
+
+
+<style>
+    label {
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+</style>
+
+@code {
+
+
+
+
+    void CreateNewItem()
+    {
+        NewItemService.Show();  
+    }
+
+}

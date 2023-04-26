@@ -1,0 +1,184 @@
+﻿@page "/dy-long-flights"
+@using NewDyCalcWasm.Data
+
+<PageTitle>Dy Calc</PageTitle>
+
+
+
+
+<div class="container">
+    @if (state == 0)
+    {
+        <div class="row justify-content-center mt-5">
+            <h4 class="text-center">DY Long Flights</h4>
+
+            @* <div class="col-6 d-lg-block py-2">
+        <div class="border rounded shadow-sm p-3">
+        <h6 class="text-muted mb-1 pt-2">
+        <p><b class="mb-1">Instructions :</b></p>
+        <p class="my-1">Day 1</p>
+        <p class="mt-1 mb-0">
+        1. Open Production plans on date <b>
+        @(
+        DateTime.UtcNow.Date.AddDays(1).ToString("dd/MM")
+        )
+        </b>
+        </p>
+        <p>2. Take info from <b class="text-primary">18:30h</b> cuttlery button and write it down in input fields</p>
+        <p class="my-1">Day 2</p>
+        <p class="mt-1 mb-0">
+        1. Open Production plans on date <b>
+        @(
+        DateTime.UtcNow.Date.AddDays(2).ToString("dd/MM")
+        )
+        </b>
+        </p>
+        <p>2. Take info from <b class="text-primary">10:30h</b> cuttlery button and write it down in input fields</p>
+        </h6>
+        </div>
+        </div>*@
+        </div>
+        <div class="row justify-content-center mt-2">
+            <div class="col-6 col-md-5 col-lg-3">
+                <div class="border rounded shadow-sm p-3">
+                    @*<h3 class="text-center pb-1">Day 1</h3>*@
+                    @foreach (var item in flights)
+                    {
+                        <h6 class="text-center fw-bold mb-0">@item.NameBox</h6>
+                        <input @bind-value="item.FirstDayMeals" type="number" class="border rounded p-2 form-control mb-2" />
+                    }
+                </div>
+            </div>
+
+            @*<div class="col-6 col-md-5 col-lg-3 ">
+        <div class="border rounded shadow-sm p-3">
+
+        <h3 class="text-center pb-1">Day 2</h3>
+
+        @foreach (var item in flights)
+        {
+        <h6 class="text-center fw-bold mb-0">@item.NameBox</h6>
+        <input @bind-value="item.SecondDayMeals" type="number" class="border mb-2 rounded p-2 form-control" />
+
+        }
+
+
+        </div>
+        </div>*@
+        </div>
+        <div class="row justify-content-center">
+            
+                <button class="btn btn-primary mt-4" @onclick="Calculate" style="width:300px;">Calculate</button>
+          
+        </div>
+    }
+    else
+    {
+        <div class="row justify-content-center">
+            <div class=" mt-2 text-center">
+                <h5 class="text-center text-danger">DY Long Flights</h5>
+                <h6>
+                    @(
+                        DateTime.UtcNow.Date.ToString("dd/MM/yy")
+                        )
+                </h6>
+                <div class="border p-4 text-start d-inline-block">
+                    <ul class="list-group mx-auto" style="width:450px;">
+                        <h4 class="text-center">MealBox + Hotmeals in the same box</h4>
+                        @foreach (var item in flights)
+                        {
+                            <li class="list-group-item">
+                                @item.NameBox
+                                <span style="float:right">
+                                    <span class="border border-dark p-2"><i class="fa-solid fa-box-open p-1 @item.ColorClass"></i>@item.CartonMealBox + <i class="fa-solid fa-boxes-stacked"></i> @item.LeftoverMealBox</span>
+
+                                    @*<span class="border border-dark p-2"> @item.PlasticMealBox <img src="/css/plastic.png" width="20" /></span>*@
+                                    <span class="border border-dark p-2"> @item.SumOfMeals </span>
+                                </span>
+                            </li>
+                        }
+                    </ul>
+
+                    @*<ul class="list-group mt-3 mx-auto" style="width:370px;">
+                <h4 class="text-center">HotMeals</h4>
+
+                @foreach (var item in flights)
+                {
+                <li class="list-group-item">
+                @item.NameHotMeal
+                <span style="float:right">
+                <span class="border border-dark p-2">@item.CartonHotMeal<i class="fa-solid fa-box-open p-1"></i></span>
+                <span class="border border-dark p-2">@item.PlasticHotMeal <img src="/css/plastic.png" width="20" /></span>
+                </span>
+                </li>
+
+                }
+                </ul>*@
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class=" mt-2" style="width:450px;">
+                <div class="border rounded shadow-sm p-3">
+                    <small><i class="fa-solid fa-box-open"></i> Carton boxes you need to take out from freezer</small>
+                    <br>
+                    <small><i class="fa-solid fa-boxes-stacked"></i> Leftovers from total number / carton size </small>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row justify-content-center text-center mt-3">
+            <button class="btn btn-outline-dark" @onclick="Back" style="width:300px;">Go Back</button>
+
+        </div>
+    }
+</div>
+
+@code {
+
+
+    int state = 0;
+
+
+    List<Meal> flights = new List<Meal>();
+
+
+
+    protected override void OnInitialized()
+    {
+        flights = new List<Meal>
+        {
+            new Meal(1, "Red / Out / South", "Chicken Peppercorn", 12, 12, colorClass:"text-danger"),
+            new Meal(2, "Blue / Home / North", "Chicken Fricasse", 12, 12, colorClass:"text-primary"),
+           // new Meal(3, "Yellow / Brunch", "Quiche Bellpepper", 12, 12),
+            new Meal(3, "Orange / CHML Out", "Meatballs", 12, 12, colorClass:"text-orange"),
+            new Meal(4, "Orange / CHML Home", "Meatballs", 12, 12, colorClass:"text-orange"),
+            new Meal(5, "Gray / GFML", "Chicken Risotto", 12, 12, colorClass:"text-gray"),
+            new Meal(6, "Green / VGML", "Masala Quinoa", 12, 12, colorClass:"text-success"),
+        };
+
+
+    }
+
+    void Calculate()
+    {
+        foreach (var item in flights)
+        {
+            item.Calculate();
+        }
+
+        Burger.TriggerBurgerHide(true);
+
+        state = 1;
+
+
+    }
+
+    public void Back()
+    {
+        state = 0;
+        Burger.TriggerBurgerHide(false);
+    }
+
+}

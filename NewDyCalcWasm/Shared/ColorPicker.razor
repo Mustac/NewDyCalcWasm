@@ -1,0 +1,32 @@
+﻿@inject IJSRuntime JSRuntime
+
+<div class="color-picker">
+    <input class="form-control" style="height:38px" type="color" @ref="colorInput" @onchange="ColorChanged" />
+</div>
+
+@code {
+    private ElementReference colorInput;
+
+    [Parameter]
+    public string Color { get; set; } = "#000000";
+
+    [Parameter]
+    public EventCallback<string> OnColorChanged { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SetValueToInput(Color);
+    }
+
+    private async Task SetValueToInput(string color)
+    {
+        await JSRuntime.InvokeVoidAsync("setInputValue", colorInput, color);
+    }
+
+    private async Task ColorChanged(ChangeEventArgs e)
+    {
+        Color = e.Value.ToString();
+        await SetValueToInput(Color);
+        await OnColorChanged.InvokeAsync(Color);
+    }
+}
