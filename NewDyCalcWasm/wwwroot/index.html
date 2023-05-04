@@ -11,7 +11,9 @@
     <link href="NewDyCalcWasm.styles.css" rel="stylesheet" />
     <link href="fontawesome/webfonts/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/webfonts/all.min.css">
-
+    <script src="script/Sortable.min.js"></script>
+    <script src="script/sortableHelper.js"></script>
+  
 
 </head>
 
@@ -23,8 +25,11 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+   <script>
+       function openNewTab(url){
+    window.open(url, '_blank');
+};
+   </script>
     <script src="_framework/blazor.webassembly.js"></script>
-    <script src="script/javascript.js"></script>
-
 </body>
 </html>

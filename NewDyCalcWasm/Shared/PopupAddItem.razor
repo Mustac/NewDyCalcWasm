@@ -1,5 +1,5 @@
 ﻿@using System.Reflection;
-@inject NewItemService NewItemService
+@inject MealService NewItemService
 @inject StorageService StorageService
 
 @if (Show)
@@ -120,15 +120,10 @@
 
     async Task CreateNewMeal()
     {
-        Console.WriteLine(mealInfo.BoxName);
-        Type type = mealInfo.GetType();
-        PropertyInfo[] properties = type.GetProperties();
-        foreach (var property in properties)
-        {
-            Console.WriteLine($"{property.Name} : {property.GetValue(mealInfo)}");
-        }
+        
 
         await StorageService.SaveItem(mealInfo);
+        mealInfo = new MealInfo() { BoxColor = "#000000" };
         HidePopup();
     }
 

@@ -1,56 +1,274 @@
-﻿@inject NewItemService NewItemService
+﻿@inject MealService MealService
+@inject StorageService StorageService
+@inject IJSRuntime JSRuntime
+@implements IDisposable
 
+@page "/edit/{Password}"
 @page "/edit"
-<div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-6">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Box Name</th>
-                        <th>Meal Name</th>
-                        <th>Color</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Test</td>
-                        <td>Test</td>
-                        <td>Test</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-            <div class="row justify-content-center">
-                <div class="col-3">
-
-                    <button class="btn btn-success form-control" @onclick="CreateNewItem">Add new item</button>
-                </div>
-            </div>
-        
-
+@using NewDyCalcWasm.Helpers;
+<div class="container mt-5">
+    <h1>Box</h1>
+    <div id="boxTableContainer" class="table-responsive">
+        <table class="table table-striped table-hover moveable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Position</th>
+                    <th>Name</th>
+                    <th>Pieces Per Carton Box</th>
+                    <th>Pieces Per Plastic Case</th>
+                    <th>Color</th>
+                    @if (enableOptions)
+                            {
+                    <th class="text-center">Delete</th>
+                            }
+                </tr>
+            </thead>
+            <tbody>
+                @if (mealsInfo is not null)
+                {
+                    @foreach (var mealInfo in _mealBoxes)
+                    {
+                        <tr class="moveable">
+                            <td>@mealInfo.BoxId</td>
+                            <td>@mealInfo.BoxPosition</td>
+                            <td>@mealInfo.BoxName</td>
+                            <td>@mealInfo.BoxPiecesPerCartonBox</td>
+                            <td>@mealInfo.BoxPiecesPerPlasticCase</td>
+                            <td><div style="width:50px; height:20px; background-color:@mealInfo.BoxColor"></div></td>
+                            @if (enableOptions)
+                            {
+                                <th class="text-center"><i @onclick="@(()=>Delete(mealInfo.BoxId))" style="cursor:pointer" class="fa-solid fa-trash text-danger"></i></th>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
+    <h1>Hotmeals</h1>
+    <div id="hotMealsTableContainer" class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Position</th>
+                    <th>Name</th>
+                    <th>Pieces Per Carton Box</th>
+                    <th>Pieces Per Plastic Case</th>
+                    <th>Color</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (mealsInfo is not null)
+                {
+                    @foreach (var mealInfo in _hotMeals)
+                    {
+                        <tr>
+                            <td>@mealInfo.HotMealId</td>
+                            <td>@mealInfo.HotMealPosition</td>
+                            <td>@mealInfo.HotMealName</td>
+                            <td>@mealInfo.HotMealPiecesPerCartonBox</td>
+                            <td>@mealInfo.HotMealPiecesPerPlasticCase</td>
+                            <td><div style="width:50px; height:20px; background-color:@mealInfo.BoxColor"></div></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (enableOptions)
+    {
+        <div class="row justify-content-end">
+            <div class="col-4">
+                <button @onclick="CreateNewItem" class="btn btn-success form-control">Add new</button>
+            </div>
+        </div>
+    }
 </div>
 
 
 
 <style>
-    label {
-        font-size: 0.8rem;
+    #mealsTableContainer {
+        max-width: 100%;
+        overflow-x: auto;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+    }
+
+    table {
         white-space: nowrap;
     }
 
+    thead {
+        background-color: #007BFF;
+        color: white;
+    }
+
+    .moveable {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+
+        .moveable:hover {
+            background-color: #f2f2f2;
+            cursor: move;
+        }
+
+    th, td {
+        text-align: left;
+        padding: 8px 12px;
+    }
 </style>
 
 @code {
+    [Parameter]
+    public string Password { get; set; } = string.Empty;
 
+    bool enableOptions = false;
 
+    List<MealInfo> mealsInfo;
+    private DotNetObjectReference<Edit> _objectReference;
 
+    List<MealBox> _mealBoxes = new List<MealBox>();
+    List<HotMeals> _hotMeals = new List<HotMeals>();
 
-    void CreateNewItem()
+    protected async override Task OnInitializedAsync()
     {
-        NewItemService.Show();  
+        if (Password == "gg")
+            enableOptions = true;
+
+        MealService.OnAnyActionTaken += RefreshList;
+        mealsInfo = await StorageService.LoadItems();
+
+        if (mealsInfo is null)
+            return;
+
+        foreach(var meal in mealsInfo)
+        {
+            _mealBoxes.Add(new MealBox
+                {
+                    BoxId = meal.BoxId,
+                    BoxColor = meal.BoxColor,
+                    BoxName = meal.BoxName,
+                    BoxPiecesPerCartonBox = meal.BoxPiecesPerCartonBox,
+                    BoxPiecesPerPlasticCase = meal.BoxPiecesPerPlasticCase,
+                    BoxPosition = meal.BoxPosition
+                });
+
+            _hotMeals.Add(new HotMeals
+                {
+                    BoxColor = meal.BoxColor,
+                    HotMealId = meal.HotMealId,
+                    HotMealName = meal.HotMealName,
+                    HotMealPiecesPerCartonBox = meal.HotMealPiecesPerCartonBox,
+                    HotMealPiecesPerPlasticCase = meal.HotMealPiecesPerPlasticCase,
+                    HotMealPosition = meal.HotMealPosition
+                });
+        }
+
+
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && enableOptions)
+        {
+            _objectReference = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("sortableHelper.initSortable", "boxTableContainer", _objectReference);
+        }
+    }
+
+    [JSInvokable("UpdateMealInfo")]
+    public async Task UpdateMealInfo(int oldIndex, int newIndex)
+    {
+        await StorageService.SwapIds(oldIndex, newIndex);
+        mealsInfo = await StorageService.LoadItems();
+        _hotMeals = new List<HotMeals>();
+        foreach(var meal in mealsInfo)
+        {
+            _hotMeals.Add(new HotMeals
+                {
+                    BoxColor = meal.BoxColor,
+                    HotMealId = meal.HotMealId,
+                    HotMealName = meal.HotMealName,
+                    HotMealPiecesPerCartonBox = meal.HotMealPiecesPerCartonBox,
+                    HotMealPiecesPerPlasticCase = meal.HotMealPiecesPerPlasticCase,
+                    HotMealPosition = meal.HotMealPosition
+                });
+        }
+
+        await InvokeAsync(StateHasChanged);
+
+    }
+
+    async Task CreateNewItem()
+    {
+        MealService.Show();
+    }
+
+    async Task RefreshList()
+    {
+        mealsInfo = await StorageService.LoadItems();
+        if(mealsInfo is null)
+        return;
+        _mealBoxes = new List<MealBox>();
+        _hotMeals = new List<HotMeals>();
+        foreach (var meal in mealsInfo)
+        {
+            _mealBoxes.Add(new MealBox
+                {
+                    BoxId = meal.BoxId,
+                    BoxColor = meal.BoxColor,
+                    BoxName = meal.BoxName,
+                    BoxPiecesPerCartonBox = meal.BoxPiecesPerCartonBox,
+                    BoxPiecesPerPlasticCase = meal.BoxPiecesPerPlasticCase,
+                    BoxPosition = meal.BoxPosition
+                });
+
+            _hotMeals.Add(new HotMeals
+                {
+                    BoxColor = meal.BoxColor,
+                    HotMealId = meal.HotMealId,
+                    HotMealName = meal.HotMealName,
+                    HotMealPiecesPerCartonBox = meal.HotMealPiecesPerCartonBox,
+                    HotMealPiecesPerPlasticCase = meal.HotMealPiecesPerPlasticCase,
+                    HotMealPosition = meal.HotMealPosition
+                });
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task Delete(string boxId)
+    {
+        await StorageService.DeleteItem(boxId);
+    }
+
+    public void Dispose()
+    {
+        MealService.OnAnyActionTaken -= RefreshList;
+    }
+
+    public class MealBox
+    {
+        public string BoxId { get; set; } = string.Empty;
+        public string BoxPosition { get; set; } = string.Empty;
+        public string BoxName { get; set; } = string.Empty;
+        public int? BoxPiecesPerCartonBox { get; set; }
+        public int? BoxPiecesPerPlasticCase { get; set; }
+        public string BoxColor { get; set; } = string.Empty;
+    }
+
+    public class HotMeals
+    {
+        public string HotMealId { get; set; } = string.Empty;
+        public string HotMealPosition { get; set; } = string.Empty;
+        public string HotMealName { get; set; } = string.Empty;
+        public int? HotMealPiecesPerCartonBox { get; set; }
+        public int? HotMealPiecesPerPlasticCase { get; set; }
+        public string BoxColor { get; set; } = string.Empty;
+    }
 }

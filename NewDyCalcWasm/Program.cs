@@ -26,7 +26,7 @@ builder.Services.AddBlazoredLocalStorage(config =>
     config.JsonSerializerOptions.WriteIndented = false;
 });
 
-builder.Services.AddScoped<NewItemService>();
+builder.Services.AddScoped<MealService>();
 builder.Services.AddScoped<StorageService>();
 
 

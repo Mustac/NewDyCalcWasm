@@ -1,77 +1,39 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NewDyCalcWasm.Data
+namespace NewDyCalcWasm.Data;
+
+public class Meal : MealInfo
 {
-    public class Meal
+
+    public int? FirstDayMealQuantity { get; set; }
+    public int? SecondDayMealQuantity { get; set; }
+    public float MealsPick { get; set; }
+
+    // Shows how manny mealbox needs to be picked
+    public float BoxMealsCartonBoxPick { get; set; }
+    public float BoxMealsPlasticBoxPick { get; set; }
+
+    // Shows how manny hotmeals needs to be picked
+    public float HotMealsCartonBoxPick { get; set; }
+    public float HotMealsPlasticBoxPick { get; set; }
+
+    public void Calculate()
     {
+        // calculation of the amount of plastic cases and carton boxes
 
-        public int Id { get; private set; }
-        public string NameBox { get; set; }
-        public string NameHotMeal { get; set; }
-        public string ColorClass { get; private set; }
+        MealsPick = (FirstDayMealQuantity.HasValue ? FirstDayMealQuantity.Value : 0) +
+                                    (SecondDayMealQuantity.HasValue ? SecondDayMealQuantity.Value : 0);
 
-        public Meal(int id, string nameBox, string nameHotMeal, int HotMealCartonBox = 24, int MealBoxCartonBox = 12, string colorClass = "")
-        {
-            Id = id;
-            NameBox = nameBox;
-            NameHotMeal = nameHotMeal;
-            this.HotMealInCartonBox = HotMealCartonBox;
-            this.MealBoxInCartonBox = MealBoxCartonBox;
-            ColorClass = colorClass;
-        }
+        BoxMealsCartonBoxPick = (float)MealsPick / (BoxPiecesPerCartonBox.HasValue ? BoxPiecesPerCartonBox.Value : 0);
+        BoxMealsPlasticBoxPick = (float)MealsPick / (BoxPiecesPerPlasticCase.HasValue ? BoxPiecesPerPlasticCase.Value : 0);
 
-        public Meal()
-        {
-        }
-
-
-        public int? FirstDayMeals { get; set; }
-        public int? SecondDayMeals { get; set; }
-        public int SumOfMeals { get; set; }
-
-
-        // How many items in one box
-        private int HotMealInCartonBox = 24;
-        private int MealBoxInCartonBox = 12;
-
-        // How many items in one plastic box
-        // private int HotMealPlasticBox = 48;
-        // private int MealBoxPlasticBox = 18;
-
-        public int CartonHotMeal { get; set; } 
-        public int LeftoverHotMeal { get; set; }
-        public int CartonMealBox { get; set; }
-        public int LeftoverMealBox { get; set; }
-
-
-        public void Calculate()
-        {
-
-            int firstMeals = FirstDayMeals == null ? 0 : FirstDayMeals.Value;
-            int secondMeals = SecondDayMeals == null ? 0 : SecondDayMeals.Value;
-
-            SumOfMeals = firstMeals + secondMeals;
-
-            //if(SumOfMeals == 0)
-            // {
-            //     CartonHotMeal = 0;
-            //     CartonMealBox = 0;
-            //    // PlasticHotMeal = "0";
-            //    // PlasticMealBox = "0";
-            //     return;
-            // }
-
-            CartonHotMeal = SumOfMeals / HotMealInCartonBox;
-            CartonMealBox = SumOfMeals / MealBoxInCartonBox;
-
-            LeftoverHotMeal = SumOfMeals % HotMealInCartonBox;
-            LeftoverMealBox = SumOfMeals % MealBoxInCartonBox;
-
-
-            //.ToString("0.##")
-        }
-
-
+        HotMealsCartonBoxPick = (float)MealsPick / (HotMealPiecesPerCartonBox.HasValue ? HotMealPiecesPerCartonBox.Value : 0);
+        HotMealsPlasticBoxPick = (float)MealsPick / (HotMealPiecesPerPlasticCase.HasValue ? HotMealPiecesPerPlasticCase.Value : 0);
     }
 
 }
+
+
+
+
+

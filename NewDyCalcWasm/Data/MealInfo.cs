@@ -4,7 +4,6 @@ namespace NewDyCalcWasm.Data
 {
     public class MealInfo
     {
-        public int Position { get; set; }
         [Required]
         public string BoxId { get;  set; } = string.Empty;
         [Required]
