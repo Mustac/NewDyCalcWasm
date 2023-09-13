@@ -8,17 +8,17 @@
 
 
 
-<div class="container mb-4">
+<div class="container mb-4" style="font-size:0.85rem">
     @if (state == 0)
     {
-        <div class="row justify-content-center mt-5">
+      @* <div class="row justify-content-center mt-5">
             <h4 class="text-center">DY Short Flights</h4>
 
             <div class="col-6 d-lg-block py-2">
                 <div class="border rounded shadow-sm p-3">
                     <h6 class="text-muted mb-1 pt-2">
                         <p><b class="mb-1">Instructions :</b></p>
-                        <p class="my-1">Day 1</p>
+                       <p class="my-1">Day 1</p>
                         <p class="mt-1 mb-0">
                             1. Open Production plans on date <b style="cursor:pointer" @onclick="FirstLink">
 
@@ -40,13 +40,13 @@
                     </h6>
                 </div>
             </div>
-        </div>
+    </div>*@
         @if(mealsInput is not null)
         {
-            <div class="row justify-content-center mt-2">
+            <div class="row justify-content-center mt-5">
                 <div class="col-6 col-md-5 col-lg-3">
                     <div class="border rounded shadow-sm p-3">
-                        <h3 class="text-center pb-1">Day 1</h3>
+                        @* <h3 class="text-center pb-1">Day 1</h3>*@
                         @foreach (var mealInput in mealsInput)
                         {
                             <h6 class="text-center fw-bold mb-0">@mealInput.BoxName</h6>
@@ -55,7 +55,7 @@
                     </div>
                 </div>
 
-                <div class="col-6 col-md-5 col-lg-3 ">
+               @* <div class="col-6 col-md-5 col-lg-3 ">
                     <div class="border rounded shadow-sm p-3">
 
                         <h3 class="text-center pb-1">Day 2</h3>
@@ -69,7 +69,7 @@
 
 
                     </div>
-                </div>
+        </div>*@
             </div>
             
         }
@@ -91,41 +91,46 @@
                 </h6>
                 <div class="border p-4 text-start d-inline-block">
                     <ul class="list-group mx-auto" style="width:600px;">
-                        <h4 class="text-center">MealBox</h4>
+                        <h4 class="text-center">Mealbox</h4>
                         @foreach (var boxmeal in mealsInput)
                         {
-                            <li class="list-group-item">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
                                 <span style="width:70px; display:inline-block" class="text-center border border-dark p-2">@boxmeal.BoxId</span>
 
                                 <i class="fa-solid fa-fill-drip" style="color:@boxmeal.BoxColor"></i>
                                 @boxmeal.BoxName
-                                <span style="float:right">
+                                </div>
+                                <div>
                                     <span class="border border-dark p-2">@((boxmeal.BoxMealsCartonBoxPick % 1 == 0) ? boxmeal.BoxMealsCartonBoxPick.ToString("F0") : boxmeal.BoxMealsCartonBoxPick.ToString("F2"))<i class="fa-solid fa-box-open p-1"></i> </span>
                                     <span class="border border-dark p-2"> @((boxmeal.BoxMealsPlasticBoxPick % 1 == 0) ? boxmeal.BoxMealsPlasticBoxPick.ToString("F0") : boxmeal.BoxMealsPlasticBoxPick.ToString("F2")) <img src="/css/plastic.png" width="20" /></span>
                                     <span class="border border-dark p-2"> @boxmeal.MealsPick </span>
                                     <span class="border border-dark p-2">@boxmeal.BoxPosition</span>
-                                </span>
+                                </div>
                             </li>
                         }
                     </ul>
 
                     <ul class="list-group mt-3 mx-auto" style="width:600px;">
-                        <h4 class="text-center">HotMeals</h4>
+                        <h4 class="text-center">Hotmeals</h4>
 
                         @foreach (var hotmeal in mealsInput)
                         {
-                            <li class="list-group-item">
-                                                                <span style="width:70px; display:inline-block" class="text-center border border-dark p-2">@hotmeal.HotMealId</span>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                                                <div style="width:70px; display:inline-block" class="text-center border border-dark p-2">@hotmeal.HotMealId
+                                                                </div>
 
                                 <i class="fa-solid fa-fill-drip" style="color:@hotmeal.BoxColor"></i>
                                 @hotmeal.HotMealName
-                                <span style="float:right">
+                                </div>
+                                <div>
                                     <span class="border border-dark p-2">@((hotmeal.HotMealsCartonBoxPick % 1 == 0) ? hotmeal.HotMealsCartonBoxPick.ToString("F0") : hotmeal.HotMealsCartonBoxPick.ToString("F2"))<i class="fa-solid fa-box-open p-1"></i></span>
                                     <span class="border border-dark p-2">@((hotmeal.HotMealsPlasticBoxPick % 1 == 0) ? hotmeal.HotMealsPlasticBoxPick.ToString("F0") : hotmeal.HotMealsPlasticBoxPick.ToString("F2"))  <img src="/css/plastic.png" width="20" /></span>
                                     <span class="border border-dark p-2"> @hotmeal.MealsPick </span>
                                     <span class="border border-dark p-2">@hotmeal.HotMealPosition</span>
 
-                                </span>
+                                </div>
                             </li>
 
                         }
@@ -137,10 +142,10 @@
             <div class="mt-2" style="width:450px;">
                 <div class="border rounded shadow-sm p-3">
                     <small><i class="fa-solid fa-box-open"></i> Carton boxes you need to take out from freezer</small>
-                    <br>
-                    <small><i class="fa-solid fa-boxes-stacked"></i> Leftovers from total number / carton size </small>
-                    @* <br>
-                <small><img src="/css/plastic.png" width="20" /> Gray plastic box you need to have when finished</small>*@
+                   @*  <br>
+                    <small><i class="fa-solid fa-boxes-stacked"></i> Leftovers from total number / carton size </small> *@
+                     <br>
+                <small><img src="/css/plastic.png" width="20" /> Gray plastic box you need to have when finished</small>
                 </div>
             </div>
         </div>
@@ -198,8 +203,8 @@
 
         }
 
-        firstLink = "http://aneusacs5ap01p.global.gg.group/norway/htm/pp@osl/" + DateToNumber(DateTime.Now.AddDays(1)) + "/C-1000P.HTM";
-        secondLink = "http://aneusacs5ap01p.global.gg.group/norway/htm/pp@osl/" + DateToNumber(DateTime.Now.AddDays(2)) + "/C-2100P.HTM";
+        firstLink = "http://aneusacs5ap01p.global.gg.group/norway/htm/pp@osl/" + DateToNumber(DateTime.Now.AddDays(1)) + "/C-2100P.HTM";
+        secondLink = "http://aneusacs5ap01p.global.gg.group/norway/htm/pp@osl/" + DateToNumber(DateTime.Now.AddDays(2)) + "/C-1000P.HTM";
 
 
     }
