@@ -7,9 +7,9 @@
 //};
 
 
-//function setInputValue(element, value) {
-//    element.value = value;
-//}
+function setInputValue(element, value) {
+    element.value = value;
+}
 
 
 
