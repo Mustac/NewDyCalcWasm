@@ -5,8 +5,8 @@ namespace NewDyCalcWasm.Data;
 public class Meal : MealInfo
 {
 
-    public int? FirstDayMealQuantity { get; set; }
-    public int? SecondDayMealQuantity { get; set; }
+    public float? FirstDayMealQuantity { get; set; }
+    public float? SecondDayMealQuantity { get; set; }
     public float MealsPick { get; set; }
 
     // Shows how manny mealbox needs to be picked
@@ -16,6 +16,7 @@ public class Meal : MealInfo
     // Shows how manny hotmeals needs to be picked
     public float HotMealsCartonBoxPick { get; set; }
     public float HotMealsPlasticBoxPick { get; set; }
+    public bool PercentAdded { get; set; } = false;
 
     public void Calculate()
     {
