@@ -1,8 +1,9 @@
 ﻿using Blazored.LocalStorage;
 using NewDyCalcWasm.Helpers;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace NewDyCalcWasm.Service
 {
@@ -11,9 +12,7 @@ namespace NewDyCalcWasm.Service
         private readonly ILocalStorageService _localStorageService;
         private readonly MealService _mealService;
 
-        
- 
-
+        public event Func<Task> OnMealChange;
 
         public StorageService(ILocalStorageService localStorageService, MealService mealService)
         {
@@ -25,21 +24,13 @@ namespace NewDyCalcWasm.Service
         {
             try
             {
-                List<MealInfo> tempMeal = await _localStorageService.GetItemAsync<List<MealInfo>>("Meals");
+                var tempMeal = await _localStorageService.GetItemAsync<List<MealInfo>>("Meals") ?? new List<MealInfo>();
 
-                if(tempMeal is null) 
-                {
-                    tempMeal = new List<MealInfo> { meal };
-                } 
-                else if(tempMeal.Count > 0)
-                {
-                    tempMeal.Add(meal);
-                }
+                tempMeal.Add(meal);
 
-                await _localStorageService.SetItemAsync($"Meals", tempMeal);
+                await _localStorageService.SetItemAsync("Meals", tempMeal);
 
                 await _mealService.TriggerMealAction(ActionTaken.Create);
-
             }
             catch
             {
@@ -51,24 +42,21 @@ namespace NewDyCalcWasm.Service
         {
             try
             {
-                List<MealInfo> tempMeals = await _localStorageService.GetItemAsync<List<MealInfo>>("Meals");
+                var tempMeals = await _localStorageService.GetItemAsync<List<MealInfo>>("Meals");
 
-                MealInfo tempMeal = tempMeals.FirstOrDefault(x => x.BoxId == boxId);
-
-                await _localStorageService.RemoveItemAsync("Meals");
-
-                tempMeals.Remove(tempMeal);
-
-                if(tempMeals.Count != 0 )
+                if (tempMeals != null)
                 {
-                    await _localStorageService.SetItemAsync($"Meals", tempMeals);
+                    var tempMeal = tempMeals.FirstOrDefault(x => x.BoxId == boxId);
+                    if (tempMeal != null)
+                    {
+                        tempMeals.Remove(tempMeal);
+                        await _localStorageService.SetItemAsync("Meals", tempMeals);
+                    }
+
+                    await _mealService.TriggerMealAction(ActionTaken.Delete);
                 }
-
-                await _mealService.TriggerMealAction(ActionTaken.Delete);
-
-
             }
-            catch 
+            catch
             {
                 await _localStorageService.SetItemAsStringAsync("LogDeleteMealInfo", $"Deletion error at {DateTime.Now}");
             }
@@ -79,12 +67,60 @@ namespace NewDyCalcWasm.Service
             try
             {
                 var meals = await _localStorageService.GetItemAsync<List<MealInfo>>("Meals");
-
-                return meals;
+                return meals ?? new List<MealInfo>();
             }
             catch
             {
                 return new List<MealInfo>();
+            }
+        }
+
+        public async Task<MealInfo> LoadItem(string id)
+        {
+            try
+            {
+                var meals = await _localStorageService.GetItemAsync<List<MealInfo>>("Meals");
+                return meals?.FirstOrDefault(x => x.BoxId == id) ?? new MealInfo();
+            }
+            catch
+            {
+                return new MealInfo();
+            }
+        }
+
+        public async Task UpdateItem(string oldId, MealInfo mealUpdateInfo)
+        {
+            try
+            {
+                List<MealInfo> meals = await LoadItems();
+
+                var meal = meals.FirstOrDefault(x => x.BoxId == oldId);
+
+                if(meal is null)
+                    throw new Exception("Meal not found");
+
+                if (meal != null)
+                {
+                    meal.BoxId = mealUpdateInfo.BoxId;
+                    meal.BoxPosition = mealUpdateInfo.BoxPosition;
+                    meal.BoxName = mealUpdateInfo.BoxName;
+                    meal.BoxPiecesPerCartonBox = mealUpdateInfo.BoxPiecesPerCartonBox;
+                    meal.BoxPiecesPerPlasticCase = mealUpdateInfo.BoxPiecesPerPlasticCase;
+                    meal.BoxColor = mealUpdateInfo.BoxColor;
+                    meal.HotMealId = mealUpdateInfo.HotMealId;
+                    meal.HotMealPosition = mealUpdateInfo.HotMealPosition;
+                    meal.HotMealName = mealUpdateInfo.HotMealName;
+                    meal.HotMealPiecesPerCartonBox = mealUpdateInfo.HotMealPiecesPerCartonBox;
+                    meal.HotMealPiecesPerPlasticCase = mealUpdateInfo.HotMealPiecesPerPlasticCase;
+                    meal.PercentageAddExtra = mealUpdateInfo.PercentageAddExtra;
+
+                    await _localStorageService.SetItemAsync("Meals", meals);
+                    await _mealService.TriggerMealAction(ActionTaken.Update);
+                }
+            }
+            catch
+            {
+                await _localStorageService.SetItemAsStringAsync("LogUpdateInfo", $"Update error at {DateTime.Now}");
             }
         }
 
@@ -93,29 +129,20 @@ namespace NewDyCalcWasm.Service
             try
             {
                 var meals = await LoadItems();
-                
-                if (meals is null)
-                    return;
 
-                var meal = meals[indexDragged];
+                if (meals != null && indexDragged < meals.Count && indexDropped < meals.Count)
+                {
+                    var meal = meals[indexDragged];
+                    meals.RemoveAt(indexDragged);
+                    meals.Insert(indexDropped, meal);
 
-                meals.Remove(meal);
-
-                meals.Insert(indexDropped, meal);
-
-
-                await _localStorageService.RemoveItemAsync("Meals");
-                await _localStorageService.SetItemAsync("Meals", meals);
-
-
-
+                    await _localStorageService.SetItemAsync("Meals", meals);
+                }
             }
             catch
             {
                 await _localStorageService.SetItemAsStringAsync("LogUpdateInfo", $"Update error at {DateTime.Now}");
             }
-
         }
-
     }
 }

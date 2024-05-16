@@ -33,5 +33,13 @@
         };
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+        window.confirmDialog = function (message) {
+            return new Promise((resolve) => {
+                const result = confirm(message);
+                resolve(result);
+            });
+        }
+    </script>
 </body>
 </html>

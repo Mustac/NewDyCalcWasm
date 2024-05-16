@@ -11,7 +11,7 @@ namespace NewDyCalcWasm.Service
         public event Func<Task>? OnAnyActionTaken;
 
 
-        public void Show() => PopupAddItem.ShowPopup();
+        public void Show(MealInfo mealInfo = null) => PopupAddItem.ShowPopup(mealInfo);
         public void Hide() => PopupAddItem.HidePopup();
 
        public async Task TriggerMealAction(ActionTaken actionTaken = ActionTaken.Any)

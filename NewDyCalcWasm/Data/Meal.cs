@@ -18,6 +18,7 @@ public class Meal : MealInfo
     public float HotMealsPlasticBoxPick { get; set; }
     public bool PercentAdded { get; set; } = false;
 
+
     public void Calculate()
     {
         // calculation of the amount of plastic cases and carton boxes

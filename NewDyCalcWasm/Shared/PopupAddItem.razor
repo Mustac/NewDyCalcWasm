@@ -1,13 +1,13 @@
-﻿@using System.Reflection;
-@inject MealService NewItemService
+﻿@using System.Reflection
+@inject MealService MealService
 @inject StorageService StorageService
 
 @if (Show)
 {
     <div class="shadow-overlay"></div>
-    <div class="absolute-center popup ">
+    <div class="absolute-center popup">
         <div class="row justify-content-center">
-            <EditForm Model="mealInfo" OnValidSubmit="CreateNewMeal">
+            <EditForm Model="MealInfo" OnValidSubmit="CreateNewMeal">
                 <div class="col-12 border border-dark p-4 rounded shadow bg-white">
                     <h1 class="fw-bold">Register new meal :</h1>
                     <hr />
@@ -15,53 +15,52 @@
                     <div class="row border rounded p-3 shadow">
                         <h6 class="fw-bolder">DY Box meal:</h6>
                         <div class="col-2">
-                            <label for="box-name">Id</label>
-                            <InputText id="box-name" class="form-control" @bind-Value="mealInfo.BoxId" />
+                            <label for="box-id">Id</label>
+                            <InputText id="box-id" class="form-control" @bind-Value="MealInfo.BoxId" />
                         </div>
                         <div class="col-2">
-                            <label for="box-name">Position</label>
-                            <InputText id="box-name" class="form-control" @bind-Value="mealInfo.BoxPosition" />
+                            <label for="box-position">Position</label>
+                            <InputText id="box-position" class="form-control" @bind-Value="MealInfo.BoxPosition" />
                         </div>
                         <div class="col-3">
                             <label for="box-name">Name</label>
-                            <InputText id="box-name" class="form-control" @bind-Value="mealInfo.BoxName" />
+                            <InputText id="box-name" class="form-control" @bind-Value="MealInfo.BoxName" />
                         </div>
                         <div class="col-1">
-                            <label for="box-name">Color</label>
-                            <ColorPicker OnColorChanged="OnColorChanged" />
+                            <label for="box-color">Color</label>
+                            <ColorPicker OnColorChanged="OnColorChanged" Color="@MealInfo.BoxColor" />
                         </div>
                         <div class="col-2">
-                            <label for="box-name">Carton box</label>
-                            <InputNumber id="box-name" placeholder="Amount" class="form-control" @bind-Value="mealInfo.BoxPiecesPerCartonBox" />
+                            <label for="box-carton">Carton box</label>
+                            <InputNumber id="box-carton" placeholder="Amount" class="form-control" @bind-Value="MealInfo.BoxPiecesPerCartonBox" />
                         </div>
                         <div class="col-2">
-                            <label for="box-name">Plastic box</label>
-                            <InputNumber id="box-name" placeholder="Amount" class="form-control" @bind-Value="mealInfo.BoxPiecesPerPlasticCase" />
+                            <label for="box-plastic">Plastic box</label>
+                            <InputNumber id="box-plastic" placeholder="Amount" class="form-control" @bind-Value="MealInfo.BoxPiecesPerPlasticCase" />
                         </div>
                     </div>
-
 
                     <div class="mt-3 row border rounded p-3 shadow">
                         <h6 class="fw-bolder">DY Hotmeal:</h6>
                         <div class="col-2">
-                            <label for="box-name">Id</label>
-                            <InputText id="box-name" class="form-control" @bind-Value="mealInfo.HotMealId" />
+                            <label for="hotmeal-id">Id</label>
+                            <InputText id="hotmeal-id" class="form-control" @bind-Value="MealInfo.HotMealId" />
                         </div>
                         <div class="col-2">
-                            <label for="box-name">Position</label>
-                            <InputText id="box-name" class="form-control" @bind-Value="mealInfo.HotMealPosition" />
+                            <label for="hotmeal-position">Position</label>
+                            <InputText id="hotmeal-position" class="form-control" @bind-Value="MealInfo.HotMealPosition" />
                         </div>
                         <div class="col-4">
-                            <label for="box-name">Name</label>
-                            <InputText id="box-name" class="form-control" @bind-Value="mealInfo.HotMealName" />
+                            <label for="hotmeal-name">Name</label>
+                            <InputText id="hotmeal-name" class="form-control" @bind-Value="MealInfo.HotMealName" />
                         </div>
                         <div class="col-2">
-                            <label for="box-name">Carton box</label>
-                            <InputNumber id="box-name" placeholder="Amount" class="form-control" @bind-Value="mealInfo.HotMealPiecesPerCartonBox" />
+                            <label for="hotmeal-carton">Carton box</label>
+                            <InputNumber id="hotmeal-carton" placeholder="Amount" class="form-control" @bind-Value="MealInfo.HotMealPiecesPerCartonBox" />
                         </div>
                         <div class="col-2">
-                            <label for="box-name">Plastic box</label>
-                            <InputNumber id="box-name" placeholder="Amount" class="form-control" @bind-Value="mealInfo.HotMealPiecesPerPlasticCase" />
+                            <label for="hotmeal-plastic">Plastic box</label>
+                            <InputNumber id="hotmeal-plastic" placeholder="Amount" class="form-control" @bind-Value="MealInfo.HotMealPiecesPerPlasticCase" />
                         </div>
                     </div>
                     <div class="row mt-4">
@@ -69,12 +68,10 @@
                             <button type="button" @onclick="HidePopup" class="form-control btn btn-dark">Cancel</button>
                         </div>
                         <div class="col-6">
-                            <button class="form-control btn btn-success">Create</button>
+                            <button class="form-control btn @(mode == Mode.Add ? "btn-info text-light" : "btn-success") ">@(mode == Mode.Add ? "Create" : "Update")</button>
                         </div>
                     </div>
                 </div>
-
-
             </EditForm>
         </div>
     </div>
@@ -105,31 +102,31 @@
 </style>
 
 @code {
-
-    MealInfo mealInfo = new MealInfo() { BoxColor = "#000000" };
-
-    [Parameter]
+    public MealInfo MealInfo { get; set; } = new MealInfo() { BoxColor = "#000000" };
     public bool Show { get; set; }
-
+    string oldBoxId = string.Empty;
+    Mode mode = Mode.Add;
 
     protected override void OnInitialized()
     {
-        NewItemService.PopupAddItem = this;
+        MealService.PopupAddItem = this;
     }
-
 
     async Task CreateNewMeal()
     {
-        
+        if (mode == Mode.Add)
+            await StorageService.SaveItem(MealInfo);
+        else
+            await StorageService.UpdateItem(oldBoxId, MealInfo);
 
-        await StorageService.SaveItem(mealInfo);
-        mealInfo = new MealInfo() { BoxColor = "#000000" };
+        MealInfo = new MealInfo() { BoxColor = "#000000" };
         HidePopup();
     }
 
     private void OnColorChanged(string newColor)
     {
-        mealInfo.BoxColor = newColor;
+        MealInfo.BoxColor = newColor;
+        StateHasChanged();
     }
 
     public void ShowPopup()
@@ -141,7 +138,30 @@
     public void HidePopup()
     {
         Show = false;
-
+        StateHasChanged();
     }
 
+    public void ShowPopup(MealInfo mealInfo = null)
+    {
+        oldBoxId = string.Empty;
+        mode = mealInfo == null ? Mode.Add : Mode.Edit;
+
+        if (mode == Mode.Edit)
+        {
+            MealInfo = mealInfo;
+            oldBoxId = mealInfo.BoxId;
+        }
+        else if (mode == Mode.Add)
+        {
+            MealInfo = new MealInfo() { BoxColor = "#000000" };
+        }
+
+        ShowPopup();
+    }
+
+    enum Mode
+    {
+        Add,
+        Edit
+    }
 }

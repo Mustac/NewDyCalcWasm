@@ -3,7 +3,6 @@
 @inject IJSRuntime JSRuntime
 @implements IDisposable
 
-@page "/edit/{Password}"
 @page "/edit"
 @using NewDyCalcWasm.Helpers;
 <div class="container mt-5">
@@ -20,7 +19,9 @@
                     <th>Color</th>
                     @if (enableOptions)
                             {
-                    <th class="text-center">Delete</th>
+                    <th class="text-center">Edit</th>
+                        <th class="text-center">Delete</th>
+
                             }
                 </tr>
             </thead>
@@ -38,7 +39,12 @@
                             <td><div style="width:50px; height:20px; background-color:@mealInfo.BoxColor"></div></td>
                             @if (enableOptions)
                             {
-                                <th class="text-center"><i @onclick="@(()=>Delete(mealInfo.BoxId))" style="cursor:pointer" class="fa-solid fa-trash text-danger"></i></th>
+                                <th class="text-center">
+                                    <i @onclick="@(()=>EditItem(mealInfo.BoxId))" style="cursor:pointer" class="d-inline-block fa-solid fa-edit text-success mr-2"></i>
+                                </th>
+                                <th class="text-center">
+                                    <i @onclick="@(()=>Delete(mealInfo.BoxId))" style="cursor:pointer" class="d-inline-block fa-solid fa-trash text-danger"></i>
+                                </th>
                             }
                         </tr>
                     }
@@ -77,14 +83,21 @@
             </tbody>
         </table>
     </div>
-    @if (enableOptions)
-    {
+    
         <div class="row justify-content-end">
-            <div class="col-4">
-                <button @onclick="CreateNewItem" class="btn btn-success form-control">Add new</button>
+            <div class="col-4 d-flex gap-2">
+            @if (!enableOptions)
+            {
+                <button @onclick="@(()=>enableOptions = true)" class="btn btn-success form-control text-white">Enable edit</button>
+            }
+            else
+            {
+                <button @onclick="@(()=>enableOptions = false)" class="btn btn-success form-control text-white">Disable edit</button>
+                <button @onclick="CreateNewItem" class="btn btn-danger form-control">Add new</button>
+            }
+
             </div>
         </div>
-    }
 </div>
 
 
@@ -202,7 +215,6 @@
         }
 
         await InvokeAsync(StateHasChanged);
-
     }
 
     async Task CreateNewItem()
@@ -210,11 +222,13 @@
         MealService.Show();
     }
 
+
+
     async Task RefreshList()
     {
         mealsInfo = await StorageService.LoadItems();
         if(mealsInfo is null)
-        return;
+            return;
         _mealBoxes = new List<MealBox>();
         _hotMeals = new List<HotMeals>();
         foreach (var meal in mealsInfo)
@@ -244,7 +258,16 @@
 
     async Task Delete(string boxId)
     {
-        await StorageService.DeleteItem(boxId);
+        bool result = await JSRuntime.InvokeAsync<bool>("confirmDialog", "Are you sure you want to proceed?");
+
+        if(result)
+            await StorageService.DeleteItem(boxId);
+    }
+
+    async Task EditItem(string mealBoxId)
+    {
+        var item = await StorageService.LoadItem(mealBoxId);
+        MealService.Show(item);
     }
 
     public void Dispose()

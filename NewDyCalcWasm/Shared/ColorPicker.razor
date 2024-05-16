@@ -13,12 +13,15 @@
     [Parameter]
     public EventCallback<string> OnColorChanged { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await SetValueToInput(Color);
+        if (firstRender)
+        {
+            await SetValueToInput(Color);
+        }
     }
 
-    private async Task SetValueToInput(string color)
+    public async Task SetValueToInput(string color)
     {
         await JSRuntime.InvokeVoidAsync("setInputValue", colorInput, color);
     }
@@ -26,7 +29,6 @@
     private async Task ColorChanged(ChangeEventArgs e)
     {
         Color = e.Value.ToString();
-        await SetValueToInput(Color);
         await OnColorChanged.InvokeAsync(Color);
     }
 }

@@ -27,5 +27,7 @@ namespace NewDyCalcWasm.Data
         public int? HotMealPiecesPerCartonBox { get; set; }
         [Required]
         public int? HotMealPiecesPerPlasticCase { get; set; }
+        public int PercentageAddExtra { get; set; }
+
     }
 }
