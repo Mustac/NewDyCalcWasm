@@ -31,14 +31,5 @@ window.sortableHelper = {
                 });
             }
         }
-    },
-    destroySortable: function (tableId) {
-        const container = document.getElementById(tableId);
-        if (container) {
-            const tbody = container.querySelector('tbody');
-            if (tbody && tbody._sortable) {
-                tbody._sortable.destroy();
-            }
-        }
     }
 };

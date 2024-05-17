@@ -91,11 +91,11 @@
         <div class="d-flex gap-2 col justify-content-end">
             @if (!enableOptions)
             {
-                <button @onclick="@(() => ToggleOptions(true))" class="btn btn-success text-white">Enable edit</button>
+                <button @onclick="@(() => enableOptions = true)" class="btn btn-success text-white">Enable edit</button>
             }
             else
             {
-                <button @onclick="@(() => ToggleOptions(false))" class="btn btn-success text-white">Disable edit</button>
+                <button @onclick="@(() => enableOptions = false)" class="btn btn-success text-white">Disable edit</button>
                 <button @onclick="CreateNewItem" class="btn btn-danger">Add new</button>
             }
         </div>
@@ -186,28 +186,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && enableOptions)
+        if (firstRender)
         {
             _objectReference = DotNetObjectReference.Create(this);
             await JSRuntime.InvokeVoidAsync("sortableHelper.initSortable", "boxTableContainer", _objectReference);
         }
-    }
-
-    private async Task ToggleOptions(bool enable)
-    {
-        enableOptions = enable;
-
-        if (enableOptions)
-        {
-            _objectReference = DotNetObjectReference.Create(this);
-            await JSRuntime.InvokeVoidAsync("sortableHelper.initSortable", "boxTableContainer", _objectReference);
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("sortableHelper.destroySortable", "boxTableContainer");
-        }
-
-        StateHasChanged();
     }
 
     [JSInvokable("UpdateMealInfo")]
