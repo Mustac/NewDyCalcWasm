@@ -38,6 +38,20 @@ namespace NewDyCalcWasm.Service
             }
         }
 
+        public async Task SaveFullList(List<MealInfo> meal)
+        {
+            try
+            {
+                await _localStorageService.SetItemAsync("Meals", meal);
+
+                await _mealService.TriggerMealAction(ActionTaken.Create);
+            }
+            catch
+            {
+                await _localStorageService.SetItemAsStringAsync("LogReadMealInfo", $"Could not load Meals from the key Meals at {DateTime.Now}");
+            }
+        }
+
         public async Task DeleteItem(string boxId)
         {
             try

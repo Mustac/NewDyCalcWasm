@@ -1,10 +1,10 @@
-﻿@inject MealService MealService
+﻿@page "/edit"
+@using NewDyCalcWasm.Helpers
+@inject MealService MealService
 @inject StorageService StorageService
 @inject IJSRuntime JSRuntime
 @implements IDisposable
 
-@page "/edit"
-@using NewDyCalcWasm.Helpers;
 <div class="container mt-5">
     <h1>Box</h1>
     <div id="boxTableContainer" class="table-responsive">
@@ -18,15 +18,14 @@
                     <th>Pieces Per Plastic Case</th>
                     <th>Color</th>
                     @if (enableOptions)
-                            {
-                    <th class="text-center">Edit</th>
+                    {
+                        <th class="text-center">Edit</th>
                         <th class="text-center">Delete</th>
-
-                            }
+                    }
                 </tr>
             </thead>
             <tbody>
-                @if (mealsInfo is not null)
+                @if (mealsInfo != null)
                 {
                     @foreach (var mealInfo in _mealBoxes)
                     {
@@ -40,10 +39,10 @@
                             @if (enableOptions)
                             {
                                 <th class="text-center">
-                                    <i @onclick="@(()=>EditItem(mealInfo.BoxId))" style="cursor:pointer" class="d-inline-block fa-solid fa-edit text-success mr-2"></i>
+                                    <i @onclick="@(() => EditItem(mealInfo.BoxId))" style="cursor:pointer" class="d-inline-block fa-solid fa-edit text-success mr-2"></i>
                                 </th>
                                 <th class="text-center">
-                                    <i @onclick="@(()=>Delete(mealInfo.BoxId))" style="cursor:pointer" class="d-inline-block fa-solid fa-trash text-danger"></i>
+                                    <i @onclick="@(() => Delete(mealInfo.BoxId))" style="cursor:pointer" class="d-inline-block fa-solid fa-trash text-danger"></i>
                                 </th>
                             }
                         </tr>
@@ -66,7 +65,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if (mealsInfo is not null)
+                @if (mealsInfo != null)
                 {
                     @foreach (var mealInfo in _hotMeals)
                     {
@@ -83,24 +82,25 @@
             </tbody>
         </table>
     </div>
-    
-        <div class="row justify-content-end">
-            <div class="col-4 d-flex gap-2">
+
+    <div class="row d-flex justify-content-between">
+        <div class="col">
+            <DownloadButton />
+            <LoadButton />
+        </div>
+        <div class="d-flex gap-2 col justify-content-end">
             @if (!enableOptions)
             {
-                <button @onclick="@(()=>enableOptions = true)" class="btn btn-success form-control text-white">Enable edit</button>
+                <button @onclick="@(() => ToggleOptions(true))" class="btn btn-success text-white">Enable edit</button>
             }
             else
             {
-                <button @onclick="@(()=>enableOptions = false)" class="btn btn-success form-control text-white">Disable edit</button>
-                <button @onclick="CreateNewItem" class="btn btn-danger form-control">Add new</button>
+                <button @onclick="@(() => ToggleOptions(false))" class="btn btn-success text-white">Disable edit</button>
+                <button @onclick="CreateNewItem" class="btn btn-danger">Add new</button>
             }
-
-            </div>
         </div>
+    </div>
 </div>
-
-
 
 <style>
     #mealsTableContainer {
@@ -149,7 +149,7 @@
     List<MealBox> _mealBoxes = new List<MealBox>();
     List<HotMeals> _hotMeals = new List<HotMeals>();
 
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         if (Password == "gg")
             enableOptions = true;
@@ -157,80 +157,9 @@
         MealService.OnAnyActionTaken += RefreshList;
         mealsInfo = await StorageService.LoadItems();
 
-        if (mealsInfo is null)
+        if (mealsInfo == null)
             return;
 
-        foreach(var meal in mealsInfo)
-        {
-            _mealBoxes.Add(new MealBox
-                {
-                    BoxId = meal.BoxId,
-                    BoxColor = meal.BoxColor,
-                    BoxName = meal.BoxName,
-                    BoxPiecesPerCartonBox = meal.BoxPiecesPerCartonBox,
-                    BoxPiecesPerPlasticCase = meal.BoxPiecesPerPlasticCase,
-                    BoxPosition = meal.BoxPosition
-                });
-
-            _hotMeals.Add(new HotMeals
-                {
-                    BoxColor = meal.BoxColor,
-                    HotMealId = meal.HotMealId,
-                    HotMealName = meal.HotMealName,
-                    HotMealPiecesPerCartonBox = meal.HotMealPiecesPerCartonBox,
-                    HotMealPiecesPerPlasticCase = meal.HotMealPiecesPerPlasticCase,
-                    HotMealPosition = meal.HotMealPosition
-                });
-        }
-
-
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && enableOptions)
-        {
-            _objectReference = DotNetObjectReference.Create(this);
-            await JSRuntime.InvokeVoidAsync("sortableHelper.initSortable", "boxTableContainer", _objectReference);
-        }
-    }
-
-    [JSInvokable("UpdateMealInfo")]
-    public async Task UpdateMealInfo(int oldIndex, int newIndex)
-    {
-        await StorageService.SwapIds(oldIndex, newIndex);
-        mealsInfo = await StorageService.LoadItems();
-        _hotMeals = new List<HotMeals>();
-        foreach(var meal in mealsInfo)
-        {
-            _hotMeals.Add(new HotMeals
-                {
-                    BoxColor = meal.BoxColor,
-                    HotMealId = meal.HotMealId,
-                    HotMealName = meal.HotMealName,
-                    HotMealPiecesPerCartonBox = meal.HotMealPiecesPerCartonBox,
-                    HotMealPiecesPerPlasticCase = meal.HotMealPiecesPerPlasticCase,
-                    HotMealPosition = meal.HotMealPosition
-                });
-        }
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    async Task CreateNewItem()
-    {
-        MealService.Show();
-    }
-
-
-
-    async Task RefreshList()
-    {
-        mealsInfo = await StorageService.LoadItems();
-        if(mealsInfo is null)
-            return;
-        _mealBoxes = new List<MealBox>();
-        _hotMeals = new List<HotMeals>();
         foreach (var meal in mealsInfo)
         {
             _mealBoxes.Add(new MealBox
@@ -253,6 +182,105 @@
                     HotMealPosition = meal.HotMealPosition
                 });
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && enableOptions)
+        {
+            _objectReference = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("sortableHelper.initSortable", "boxTableContainer", _objectReference);
+        }
+    }
+
+    private async Task ToggleOptions(bool enable)
+    {
+        enableOptions = enable;
+
+        if (enableOptions)
+        {
+            _objectReference = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("sortableHelper.initSortable", "boxTableContainer", _objectReference);
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("sortableHelper.destroySortable", "boxTableContainer");
+        }
+
+        StateHasChanged();
+    }
+
+    [JSInvokable("UpdateMealInfo")]
+    public async Task UpdateMealInfo(int oldIndex, int newIndex)
+    {
+        await StorageService.SwapIds(oldIndex, newIndex);
+        mealsInfo = await StorageService.LoadItems();
+        _mealBoxes = new List<MealBox>();
+        _hotMeals = new List<HotMeals>();
+
+        foreach (var meal in mealsInfo)
+        {
+            _mealBoxes.Add(new MealBox
+                {
+                    BoxId = meal.BoxId,
+                    BoxColor = meal.BoxColor,
+                    BoxName = meal.BoxName,
+                    BoxPiecesPerCartonBox = meal.BoxPiecesPerCartonBox,
+                    BoxPiecesPerPlasticCase = meal.BoxPiecesPerPlasticCase,
+                    BoxPosition = meal.BoxPosition
+                });
+
+            _hotMeals.Add(new HotMeals
+                {
+                    BoxColor = meal.BoxColor,
+                    HotMealId = meal.HotMealId,
+                    HotMealName = meal.HotMealName,
+                    HotMealPiecesPerCartonBox = meal.HotMealPiecesPerCartonBox,
+                    HotMealPiecesPerPlasticCase = meal.HotMealPiecesPerPlasticCase,
+                    HotMealPosition = meal.HotMealPosition
+                });
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task CreateNewItem()
+    {
+        MealService.Show();
+    }
+
+    async Task RefreshList()
+    {
+        mealsInfo = await StorageService.LoadItems();
+        if (mealsInfo == null)
+            return;
+
+        _mealBoxes = new List<MealBox>();
+        _hotMeals = new List<HotMeals>();
+
+        foreach (var meal in mealsInfo)
+        {
+            _mealBoxes.Add(new MealBox
+                {
+                    BoxId = meal.BoxId,
+                    BoxColor = meal.BoxColor,
+                    BoxName = meal.BoxName,
+                    BoxPiecesPerCartonBox = meal.BoxPiecesPerCartonBox,
+                    BoxPiecesPerPlasticCase = meal.BoxPiecesPerPlasticCase,
+                    BoxPosition = meal.BoxPosition
+                });
+
+            _hotMeals.Add(new HotMeals
+                {
+                    BoxColor = meal.BoxColor,
+                    HotMealId = meal.HotMealId,
+                    HotMealName = meal.HotMealName,
+                    HotMealPiecesPerCartonBox = meal.HotMealPiecesPerCartonBox,
+                    HotMealPiecesPerPlasticCase = meal.HotMealPiecesPerPlasticCase,
+                    HotMealPosition = meal.HotMealPosition
+                });
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 
@@ -260,8 +288,10 @@
     {
         bool result = await JSRuntime.InvokeAsync<bool>("confirmDialog", "Are you sure you want to proceed?");
 
-        if(result)
+        if (result)
+        {
             await StorageService.DeleteItem(boxId);
+        }
     }
 
     async Task EditItem(string mealBoxId)

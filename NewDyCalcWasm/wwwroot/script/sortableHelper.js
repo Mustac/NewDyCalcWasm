@@ -1,26 +1,44 @@
-﻿window.sortableHelper = {
-    initSortable: function (tableId, dotnetHelper) {
+﻿
+
+//window.sortableHelper = {
+//    initSortable: function (tableId, dotNetHelper) {
+//        const container = document.getElementById(tableId);
+//        if (container) {
+//            const tbody = container.querySelector('tbody');
+//            Sortable.create(tbody, {
+//                swapThreshold: 0.65,
+//                animation: 150,
+//                onEnd: function (event) {
+//                    dotNetHelper.invokeMethodAsync('UpdateMealInfo', event.oldIndex, event.newIndex);
+//                },
+//            });
+//        }
+//    }
+//};
+
+window.sortableHelper = {
+    initSortable: function (tableId, dotNetHelper) {
         const container = document.getElementById(tableId);
-        const tbody = container.querySelector('table tbody');
-
-        Sortable.create(tbody, {
-            swapThreshold: 0.65,
-            animation: 150,
-            onStart: function (event) {
-                event.item.dataset.orderId = event.item.id;
-            },
-            onEnd: function (event) {
-                dotnetHelper.invokeMethodAsync('UpdateMealInfo', event.oldIndex, event.newIndex);
-            },
-        });
+        if (container) {
+            const tbody = container.querySelector('tbody');
+            if (tbody) {
+                Sortable.create(tbody, {
+                    swapThreshold: 0.65,
+                    animation: 150,
+                    onEnd: function (event) {
+                        dotNetHelper.invokeMethodAsync('UpdateMealInfo', event.oldIndex, event.newIndex);
+                    },
+                });
+            }
+        }
     },
+    destroySortable: function (tableId) {
+        const container = document.getElementById(tableId);
+        if (container) {
+            const tbody = container.querySelector('tbody');
+            if (tbody && tbody._sortable) {
+                tbody._sortable.destroy();
+            }
+        }
+    }
 };
-
-// sortableHelper.js
-(function () {
-    // Your existing code
-
-    window.test = () => {
-        console.log("Test function called");
-    };
-})();

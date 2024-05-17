@@ -1,0 +1,15 @@
+﻿@page "/download"
+@using System.Text.Json
+@inject IJSRuntime JSRuntime
+@inject StorageService StorageService
+
+<button class="btn btn-primary" @onclick="DownloadJson">Download Backup</button>
+
+@code {
+    private async Task DownloadJson()
+    {
+        var data = await StorageService.LoadItems();
+        var json = JsonSerializer.Serialize(data);
+        await JSRuntime.InvokeVoidAsync("saveFile", "data.json", json);
+    }
+}

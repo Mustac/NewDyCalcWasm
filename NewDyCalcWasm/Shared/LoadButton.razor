@@ -1,0 +1,29 @@
+﻿@using System.Text.Json
+@inject IJSRuntime JSRuntime
+@inject StorageService StorageService
+
+<button class="btn btn-danger" @onclick="LoadJson">Load from Backup</button>
+
+
+
+@code {
+
+    private async Task LoadJson()
+    {
+        try
+        {
+            var json = await JSRuntime.InvokeAsync<string>("loadFile");
+            List<MealInfo> usersInfo = JsonSerializer.Deserialize<List<MealInfo>>(json);
+
+            if (usersInfo != null)
+            {
+                await StorageService.SaveFullList(usersInfo);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error loading JSON: {ex.Message}");
+        }
+    }
+
+}
